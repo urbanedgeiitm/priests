@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login or Sign Up</title>
+    <style>
+        /* General styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background: #fff;
+            width: 400px;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #4a90e2;
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tabs button.active {
+            border-bottom: 3px solid #4a90e2;
+            color: #4a90e2;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            font-weight: bold;
+            margin: 15px 0 5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #4a90e2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #3a78d1;
+        }
+
+        #otpSection {
+            margin-top: 20px;
+        }
+
+        #otpError {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        footer {
+            margin-top: 1.5rem;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Priest Services Platform</h1>
+        <div class="tabs">
+            <button id="loginTab" class="active">Login</button>
+            <button id="signupTab">Sign Up</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm" class="form active">
+            <form id="loginWithOtpForm">
+                <label for="loginMethod">Login With:</label>
+                <select id="loginMethod" name="loginMethod" required>
+                    <option value="email">Email</option>
+                    <option value="phone">Phone Number</option>
+                </select>
+
+                <label for="loginInput">Enter Email/Phone:</label>
+                <input type="text" id="loginInput" name="loginInput" placeholder="Enter your email or phone number" required>
+
+                <button type="button" id="requestOtpBtn">Request OTP</button>
+
+                <div id="otpSection" style="display: none;">
+                    <label for="otp">Enter OTP:</label>
+                    <input type="text" id="otp" name="otp" placeholder="Enter the OTP" required>
+                    <button type="button" id="verifyOtpBtn">Verify OTP</button>
+                    <p id="otpError">Wrong OTP. Please try again later.</p>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sign-Up Form -->
+        <div id="signupForm" class="form">
+            <form>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 Priest Services Platform</p>
+        </footer>
+    </div>
+
+    <script>
+        let generatedOtp;
+
+        // Toggle tabs
+        document.getElementById('loginTab').addEventListener('click', () => {
+            document.getElementById('loginTab').classList.add('active');
+            document.getElementById('signupTab').classList.remove('active');
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('signupForm').classList.remove('active');
+        });
+
+        document.getElementById('signupTab').addEventListener('click', () => {
+            document.getElementById('signupTab').classList.add('active');
+            document.getElementById('loginTab').classList.remove('active');
+            document.getElementById('signupForm').classList.add('active');
+            document.getElementById('loginForm').classList.remove('active');
+        });
+
+        // Request OTP
+        document.getElementById('requestOtpBtn').addEventListener('click', () => {
+            const loginMethod = document.getElementById('loginMethod').value;
+            const loginInput = document.getElementById('loginInput').value;
+
+            if (!loginInput) {
+                alert(`Please enter a valid ${loginMethod}.`);
+                return;
+            }
+
+            // Simulate OTP generation
+            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            alert(`OTP sent to your ${loginMethod}: ${generatedOtp}`); // Replace with email/SMS integration
+
+            document.getElementById('otpSection').style.display = 'block';
+        });
+
+        // Verify OTP
+        document.getElementById('verifyOtpBtn').addEventListener('click', () => {
+            const enteredOtp = document.getElementById('otp').value;
+
+            if (enteredOtp === generatedOtp) {
+                const loginInput = document.getElementById('loginInput').value;
+
+                if (loginInput.includes('@priest.com')) {
+                    alert('Welcome, Priest!');
+                    window.location.href = 'priest_dashboard3.html'; // Redirect to Priest Dashboard
+                } else {
+                    alert('Welcome, User!');
+                    window.location.href = 'user_dashboard2.html'; // Redirect to User Dashboard
+                }
+            } else {
+                document.getElementById('otpError').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>User Dashboard</h1>
+        <nav>
+            <a href="index.html">Home</a> |
+            <a href="logout.html">Logout</a>
+        </nav>
+    </header>
+
+    <section id="availableServices">
+        <h2>Available Services</h2>
+        <div id="serviceList">
+            <p>No services available right now.</p>
+        </div>
+    </section>
+
+    <section id="priestProfile">
+        <h2>Priest Profile</h2>
+        <div id="priestProfileDetails"></div>
+    </section>
+
+    <section id="myBookings">
+        <h2>My Bookings</h2>
+        <ul id="bookingsList">
+            <li>No bookings made yet.</li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Priest Services Platform</p>
+    </footer>
+
+    <!-- JavaScript for managing services and bookings -->
+    <script>
+        // Load available services from localStorage and display them
+        function loadAvailableServices() {
+            const services = JSON.parse(localStorage.getItem('services')) || [];
+            const serviceListDiv = document.getElementById('serviceList');
+            serviceListDiv.innerHTML = '';
+
+            if (services.length === 0) {
+                serviceListDiv.innerHTML = '<p>No services available right now.</p>';
+            } else {
+                services.forEach((service, index) => {
+                    const serviceDiv = document.createElement('div');
+                    serviceDiv.innerHTML = `
+                        <strong>${service.name}</strong> - Fee: ₹${service.fee}, Availability: ${service.availability} 
+                        <button onclick="bookService(${index})">Book Now</button>
+                    `;
+                    serviceListDiv.appendChild(serviceDiv);
+                });
+            }
+        }
+
+        // Load priest profile from localStorage
+        function loadPriestProfile() {
+            const priestProfile = JSON.parse(localStorage.getItem('priestProfile')) || null;
+            const priestProfileDetailsDiv = document.getElementById('priestProfileDetails');
+
+            if (priestProfile) {
+                priestProfileDetailsDiv.innerHTML = `
+                    <img src="${priestProfile.photo}" alt="Priest Photo" width="100"><br>
+                    <strong>${priestProfile.name}</strong><br>
+                    Pujas Performed: ${priestProfile.pujasPerformed}
+                `;
+            } else {
+                priestProfileDetailsDiv.innerHTML = '<p>No priest profile available.</p>';
+            }
+        }
+
+        // Book a service
+        function bookService(serviceIndex) {
+            const services = JSON.parse(localStorage.getItem('services')) || [];
+            const selectedService = services[serviceIndex];
+
+            let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            bookings.push({
+                name: selectedService.name,
+                fee: selectedService.fee,
+                availability: selectedService.availability,
+                date: new Date().toLocaleString()
+            });
+
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            loadBookings();
+        }
+
+        // Load existing bookings
+        function loadBookings() {
+            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            const bookingsList = document.getElementById('bookingsList');
+            bookingsList.innerHTML = '';
+
+            if (bookings.length === 0) {
+                bookingsList.innerHTML = '<li>No bookings made yet.</li>';
+            } else {
+                bookings.forEach(booking => {
+                    const bookingItem = document.createElement('li');
+                    bookingItem.textContent = `${booking.name} - Fee: ₹${booking.fee}, Booked on: ${booking.date}`;
+                    bookingsList.appendChild(bookingItem);
+                });
+            }
+        }
+
+        // Load available services, priest profile, and bookings on page load
+        window.onload = function() {
+            loadAvailableServices();
+            loadPriestProfile();
+            loadBookings();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="211997350279-bfvrvmgu516sfomfb0ac475gadvl2l9t.apps.googleusercontent.com">
+</head>
+<body>
+    <header>
+        <h1>Login to Priest Services Platform</h1>
+        <nav>
+            <a href="index.html">Home</a> |
+            <a href="signup.html">Sign Up</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Login with Email</h2>
+        <form id="loginForm">
+            <label for="username">Username (Email):</label>
+            <input type="email" id="username" name="username" required><br>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br>
+
+            <button type="submit">Login</button>
+        </form>
+        
+        <p id="loginError" style="color: red; display: none;">Invalid email or password. Please try again.</p>
+
+        <h2>Or Login with Google</h2>
+        <!-- Google Sign-In button -->
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+        <!-- Optional: Sign Out button -->
+        <a href="#" onclick="signOut();">Sign out</a>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Priest Services Platform</p>
+    </footer>
+
+    <script>
+        // Handle manual login
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            const user = users.find(user => user.email === username && user.password === password);
+
+            if (user) {
+                // Redirect based on user role
+                if (user.role === "user") {
+                    window.location.href = "user_dashboard.html";
+                } else if (user.role === "priest") {
+                    window.location.href = "priest_dashboard.html";
+                }
+            } else {
+                // Show error message if login fails
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+
+        // Function to handle successful Google sign-in
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            var email = profile.getEmail();
+            
+            // Check if the user exists in localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(user => user.email === email);
+
+            if (user) {
+                // Redirect based on user role
+                if (user.role === "user") {
+                    window.location.href = "user_dashboard.html";
+                } else if (user.role === "priest") {
+                    window.location.href = "priest_dashboard.html";
+                }
+            } else {
+                alert("No account found for this Google account. Please sign up.");
+            }
+        }
+
+        // Optional: Function to sign out
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+                alert("You have been signed out.");
+            });
+        }
+    </script>
+</body>
+</html>

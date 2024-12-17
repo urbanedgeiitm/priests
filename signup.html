@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Priest Services Platform - Sign Up</h1>
+        <nav>
+            <a href="index.html">Home</a> |
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Create an Account</h2>
+        <form id="signupForm">
+            <label for="role">Sign Up As:</label>
+            <select id="role" name="role">
+                <option value="user">User</option>
+                <option value="priest">Priest</option>
+            </select>
+
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" list="city-suggestions" required>
+            <datalist id="city-suggestions"></datalist>
+
+            <button type="submit">Sign Up</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Priest Services Platform</p>
+    </footer>
+
+    <script>
+        const cities = [
+            "Mumbai", "Delhi", "Bengaluru", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata", "Surat", "Pune", 
+            "Jaipur", "Patna", "Ranchi", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Dhanbad", 
+            "Bokaro Steel City", "Deoghar", "Buxar", "Chapra", "Chhapra", "Aurangabad", "Begusarai", "Katihar", "Kishanganj", "Lakhisarai", "Madhubani", 
+            "Mokama", "Motihari", "Naugachia", "Nawada", "Saharsa", "Sasaram", "Sheikhpura", "Sheohar", "Sitamarhi", 
+            "Siwan", "Supaul", "Vaishali", "Araria", "Banka", "Barauli", "Barauni", "Dalsinghsarai", "Dumra", "Gopalganj", 
+            "Jagdishpur", "Khagaria", "Madhepura", "Maharajganj", "Maner", "Masaurhi", "Mirganj", "Nokha", "Raxaul", 
+            "Samastipur", "Teghra", "Warisaliganj", "Barh", "Bihta", "Barhampur", "Kahalgaon", "Lalganj", "Mahnar Bazar", 
+            "Marhaura", "Mohania", "Phulwari Sharif", "Rosera", "Siuri", "Tikari", "Bakhtiarpur", "Hilsa", "Piro", 
+            "Sonepur", "Chirkunda", "Garhwa", "Gumla", "Jhumri Telaiya", "Lohardaga", "Mihijam", "Pakur", "Sahebganj", 
+            "Simdega", "Tandwa", "Chatra", "Godda", "Chaibasa", "Adityapur", "Chakradharpur", "Barharwa", "Barhi", 
+            "Chandrapura", "Dumka", "Ghatsila", "Hussainabad", "Latehar", "Rajmahal", "Sarath", "Tenughat", "Basukinath", 
+            "Barkagaon", "Bishnugarh", "Chandil", "Daltonganj", "Koderma", "Maheshpur", "Manoharpur", "Mandar", 
+            "Manika", "Narayanpur", "Noamundi", "Pathardih", "Rajdhanwar", "Ratu", "Shikaripara", "Simariya", "Tisri", 
+            "Torpa", "Patratu", "Itkhori", "Dumri", "Shibganj", "Khunti", "Nagar Untari", "Ghatshila", "Katoria", 
+            "Phusro", "Hazaribagh", "Giridih", "Ramgarh", "Medininagar"
+            // Add more Indian cities here, especially from Bihar and Jharkhand
+        ];
+
+        document.getElementById('location').addEventListener('input', function() {
+            const input = this.value.toLowerCase();
+            const suggestions = cities.filter(city => city.toLowerCase().includes(input));
+
+            const datalist = document.getElementById('city-suggestions');
+            datalist.innerHTML = suggestions.map(city => `<option value="${city}"></option>`).join('');
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const role = document.getElementById('role').value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const location = document.getElementById('location').value;
+
+            // Check if users exist in localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Add new user data
+            users.push({
+                role,
+                name,
+                email,
+                password,
+                location
+            });
+
+            // Save updated users array back to localStorage
+            localStorage.setItem('users', JSON.stringify(users));
+
+            alert('Account created successfully! You can now log in.');
+
+            // Redirect to login page
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

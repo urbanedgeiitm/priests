@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priest Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Priest Dashboard</h1>
+        <nav>
+            <a href="index.html">Home</a> |
+            <a href="logout.html">Logout</a>
+        </nav>
+    </header>
+
+    <section id="priestDetails">
+        <h2>Priest Profile</h2>
+        <form id="priestProfileForm">
+            <label for="priestName">Priest Name:</label>
+            <input type="text" id="priestName" name="priestName" required>
+            <br>
+            <label for="pujasPerformed">Number of Pujas Performed:</label>
+            <input type="number" id="pujasPerformed" name="pujasPerformed" required>
+            <br>
+            <label for="priestPhoto">Upload Profile Photo:</label>
+            <input type="file" id="priestPhoto" name="priestPhoto" accept="image/*" required>
+            <br>
+            <button type="submit">Save Profile</button>
+        </form>
+        <div id="priestProfilePreview"></div>
+    </section>
+
+    <section id="services">
+        <h2>Manage Your Services</h2>
+        <form id="addServiceForm">
+            <label for="serviceName">Service Name:</label>
+            <input type="text" id="serviceName" name="serviceName" required>
+            <br>
+            <label for="serviceFee">Service Fee (₹):</label>
+            <input type="text" id="serviceFee" name="serviceFee" required placeholder="Enter amount in rupees">
+            <br>
+            <label for="serviceAvailabilityDate">Availability Date:</label>
+            <input type="date" id="serviceAvailabilityDate" name="serviceAvailabilityDate" required>
+            <br>
+            <label for="serviceTimeOption">Select Time Slot:</label>
+            <select id="serviceTimeOption" name="serviceTimeOption" onchange="toggleCustomTimeInput()" required>
+                <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
+                <option value="Afternoon (12 PM - 3 PM)">Afternoon (12 PM - 3 PM)</option>
+                <option value="Evening (3 PM - 6 PM)">Evening (3 PM - 6 PM)</option>
+                <option value="custom">Enter Custom Time</option>
+            </select>
+            <br>
+            <label for="customTimeSlot" id="customTimeLabel" style="display: none;">Custom Time Slot:</label>
+            <input type="time" id="customTimeSlot" name="customTimeSlot" style="display: none;">
+            <br>
+            <button type="submit">Add Service</button>
+        </form>
+    </section>
+
+    <section>
+        <h3>Current Services:</h3>
+        <div id="priestServiceList"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Priest Services Platform</p>
+    </footer>
+
+    <!-- JavaScript Code -->
+    <script>
+        // Save priest profile
+        document.getElementById('priestProfileForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const priestName = document.getElementById('priestName').value;
+            const pujasPerformed = document.getElementById('pujasPerformed').value;
+            const priestPhotoFile = document.getElementById('priestPhoto').files[0];
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const priestPhoto = e.target.result; // Base64 image
+
+                // Save the profile details in localStorage
+                const priestProfile = {
+                    name: priestName,
+                    pujasPerformed: pujasPerformed,
+                    photo: priestPhoto // Store the Base64 image
+                };
+                localStorage.setItem('priestProfile', JSON.stringify(priestProfile));
+
+                // Display profile preview
+                displayPriestProfile(priestProfile);
+            };
+            reader.readAsDataURL(priestPhotoFile);
+        });
+
+        // Function to display priest profile preview
+        function displayPriestProfile(profile) {
+            const profilePreviewDiv = document.getElementById('priestProfilePreview');
+            profilePreviewDiv.innerHTML = `
+                <img src="${profile.photo}" alt="Priest Photo" width="100"><br>
+                <strong>${profile.name}</strong><br>
+                Pujas Performed: ${profile.pujasPerformed}
+            `;
+        }
+
+        // Function to load the priest profile if it exists
+        function loadPriestProfile() {
+            const storedProfile = JSON.parse(localStorage.getItem('priestProfile')) || null;
+            if (storedProfile) {
+                displayPriestProfile(storedProfile);
+            }
+        }
+
+        // Load services from localStorage
+        function loadServices() {
+            const services = JSON.parse(localStorage.getItem('services')) || [];
+            const serviceListDiv = document.getElementById('priestServiceList');
+            serviceListDiv.innerHTML = '';
+
+            if (services.length === 0) {
+                serviceListDiv.innerHTML = '<p>No services added yet.</p>';
+            } else {
+                services.forEach((service, index) => {
+                    const serviceDiv = document.createElement('div');
+                    serviceDiv.innerHTML = `
+                        <strong>${service.name}</strong> - Fee: ₹${service.fee}, Availability: ${service.availability} 
+                        <button onclick="deleteService(${index})">Delete</button>
+                    `;
+                    serviceListDiv.appendChild(serviceDiv);
+                });
+            }
+        }
+
+        // Load profile and services on page load
+        window.onload = function() {
+            loadPriestProfile();
+            loadServices();
+        }
+
+        // Save the service to localStorage
+        document.getElementById('addServiceForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const serviceName = document.getElementById('serviceName').value;
+            const serviceFee = document.getElementById('serviceFee').value;
+            const serviceAvailabilityDate = document.getElementById('serviceAvailabilityDate').value;
+            const timeOption = document.getElementById('serviceTimeOption').value;
+            const customTimeSlot = document.getElementById('customTimeSlot').value;
+
+            let serviceTimeSlot = timeOption === 'custom' ? customTimeSlot : timeOption;
+
+            let services = JSON.parse(localStorage.getItem('services')) || [];
+            services.push({
+                name: serviceName,
+                fee: serviceFee,
+                availability: `${serviceAvailabilityDate} ${serviceTimeSlot}`
+            });
+
+            localStorage.setItem('services', JSON.stringify(services));
+            loadServices();
+        });
+    </script>
+</body>
+</html>
